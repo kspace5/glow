@@ -1,6 +1,7 @@
 import cv2
 from pathlib import Path
-
+from enum import Enum
+from . import utils
 # # load the input image and show its dimensions, keeping in mind that
 # # images are represented as a multi-dimensional NumPy array with
 # # shape no. rows (height) x no. columns (width) x no. channels (depth)
@@ -22,7 +23,30 @@ from pathlib import Path
 # cv2.waitKey(0)
 
 
-def batchCropImages(path: Path, destPath: Path, ):
+class CropDirection (Enum):
+    """
+    Crop directions defined
+    """
+    vert = 1
+    hori = 2
+    diag = 3
+
+
+def batchCropImages(path: Path, destDir: Path, targetSize=256, fileNameCallback=None):
     """
     Crop all images in a directory
     """
+
+
+def cropImage(path: Path, destDir: Path, targetSize=256, fileNameCallback=None, cropModes=[CropDirection.vert, CropDirection.hori, CropDirection.diag]):
+    """
+    Crop one image
+    """
+
+
+# image should be of shape w, h, d
+def crop_d1(path: Path, ):
+    """
+
+    """
+    return False
