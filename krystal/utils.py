@@ -1,7 +1,7 @@
 from pathlib import Path
 
 
-def filePathList(p: Path, pattern="*.*"):
+def filepathlist(p: Path, pattern="*.*"):
     """
     Return a list of files in the directory
     Parameters
@@ -32,7 +32,7 @@ def filePathList(p: Path, pattern="*.*"):
         raise Exception(msg)
 
 
-def fileNameList(p: Path, pattern="*.*"):
+def filenamelist(p: Path, pattern="*.*"):
     """
     Return a list of files in the directory
     Parameters

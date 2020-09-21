@@ -1,26 +1,7 @@
-import cv2
 from pathlib import Path
 from enum import Enum
-from . import utils
-# # load the input image and show its dimensions, keeping in mind that
-# # images are represented as a multi-dimensional NumPy array with
-# # shape no. rows (height) x no. columns (width) x no. channels (depth)
-# imPath = Path(Path.cwd())
-# imPath /= "temp/frame100.png"
-# print(imPath)
-# image = cv2.imread(str(imPath))
-# (h, w, d) = image.shape
-# print("width={}, height={}, depth={}".format(w, h, d))
-# print(type(image))
-# # cv2.imshow("Image R", image[:,:,0])
-# # cv2.imshow("Image G", image[:,:,1])
-# # cv2.imshow("Image B", image[:,:,2])
-# mxy = 400
-# cv2.imshow("Image Cropped0", image[0:mxy,0:mxy,:])
-# cv2.imshow("Image Cropped1", image[0:mxy,-mxy:,:])
-# cv2.imshow("Image Cropped2", image[-mxy:,0:mxy,:])
-# cv2.imshow("Image Cropped3", image[-mxy:,-mxy:,:])
-# cv2.waitKey(0)
+import numpy as np
+import math as M
 
 
 class CropDirection (Enum):
@@ -32,21 +13,113 @@ class CropDirection (Enum):
     diag = 3
 
 
-def batchCropImages(path: Path, destDir: Path, targetSize=256, fileNameCallback=None):
+def batchcrop(path: Path, destDir: Path, targetSize=256, fileNameCallback=None):
     """
     Crop all images in a directory
     """
 
 
-def cropImage(path: Path, destDir: Path, targetSize=256, fileNameCallback=None, cropModes=[CropDirection.vert, CropDirection.hori, CropDirection.diag]):
+def cropimg(path: Path, destDir: Path, targetSize=256, fileNameCallback=None, cropModes=[CropDirection.vert, CropDirection.hori, CropDirection.diag]):
     """
     Crop one image
     """
 
 
-# image should be of shape w, h, d
-def crop_d1(path: Path, ):
+def hcrop(im , t = 256, count = 3) :
     """
+    Crops an image horizontally at the vertical center and returns the resulting 
+    images.
+    Input image should be of shape h, w, d or h, w
+    Parameters
+    ----------
+    im : numpy.ndarray
+        Format h, w, d or h, w
+    t : int
+        Target size
+    count: int
+        Target count. Using an odd number count gives the center
+    Returns
+    -------
+    coords : numpy.ndarray (shape n x 2)
+        Array of topleft coords
+        Example: array([[  0, 125],
+           [ 44, 125],
+           [ 88, 125],
+           [132, 125],
+           [177, 125]])
+    See Also
+    --------
+    vcrops, dcrops
+    Examples
+    --------
+    >>> crops = ki.hcrop(im, t=128,count=7))
+    >>> for n in crops:
+    >>>     print(n)
+    [  0 125]
+    [ 44 125]
+    [ 88 125]
+    [132 125]
+    [177 125]
+    """
+    h, w = im.shape[0], im.shape[1]
+    toplimit = M.floor((h - t) / 2) # Same as h/2 - t/2
+    lastp = w - t
+    if lastp <= 0:
+        raise Exception("Invalid crop size. Crop size is larger than image dimensions")
+    xcuts = np.linspace(0, lastp, count).astype(int)
+    xcuts  = xcuts[..., np.newaxis] # add new axis for appending
+    tl = np.full(count, toplimit) # array of toplimit for appending
+    tl = tl[..., np.newaxis] # add new axis for appending
+    crops  = np.append(tl, xcuts, axis=1) # append to build top left coords
+    return crops
 
+
+def vcrop(im , t = 256, count = 3) :
     """
-    return False
+    Crops an image vertically at the horizontal center and returns the resulting 
+    images.
+    Input image should be of shape h, w, d or h, w
+    Parameters
+    ----------
+    im : numpy.ndarray
+        Format h, w, d or h, w
+    t : int
+        Target size
+    count: int
+        Target count. Using an odd number count gives the center
+    Returns
+    -------
+    coords : numpy.ndarray (shape n x 2)
+        Array of topleft coords
+        Example: 
+        array([[  0, 197],
+       [ 88, 197],
+       [177, 197]])
+    See Also
+    --------
+    vcrops, dcrops
+    Examples
+    --------
+    >>> crops = ki.vcrop(im, t=128,count=7))
+    >>> for n in crops:
+    >>>     print(n)
+    """
+    h, w = im.shape[0], im.shape[1]
+    leftlimit = M.floor((w - t) / 2) # Same as h/2 - t/2
+    lastp = h - t
+    if lastp <= 0:
+        raise Exception("Invalid crop size. Crop size is larger than image dimensions")
+    ycuts = np.linspace(0, lastp, count).astype(int)
+    ycuts  = ycuts[..., np.newaxis] # add new axis for appending
+    tl = np.full(count, leftlimit) # array of leftlimit values for appending
+    tl = tl[..., np.newaxis] # add new axis for appending
+    crops  = np.append(ycuts, tl, axis=1) # append to build top left coords
+    return crops
+
+
+def imgcut(im, t, *crops):
+    imlist = []
+    for crop in crops:
+        for c in crop:
+            imlist.append(im[c[0]:c[0]+t, c[1]:c[1]+t])
+    return imlist

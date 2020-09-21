@@ -4,40 +4,39 @@ from pathlib import Path
 
 
 def extractFrames(videoFilePath, destPath, frameNamePattern="frame{}.png", extractDelta=30, maxFrames=-1, frameStart=0):
-    """Function to extract video frames"""
     """
-        Extracts video frames to images
-            Non-scalar `start` and `stop` are now supported.
-        Parameters
-        ----------
-        videoFilePath : string
-            Full path to video file 
-        destPath : string
-            Path to extract image frames. Creates the dest dir and all parents if not exists
-        frameNamePattern: string
-            Pattern for frame image file naming. Example: "frame{}.png".format(frameCount)
-        extractDelta : int, optional
-            Frame stride
-        maxFrames : int, optional
-            Maximum frames to extract (Not implemented yet)
-        frameStart : int, optional
-            Start with frame (Not implemented yet)
-        Returns
-        -------
-        frameCount : int
-            Total frames read
-        extractCount : int, optional
-            Total frames extracted
-        See Also
-        --------
-        Examples
-        --------
-        >>> result = kv.extractFrames("../temp_del/movx1.mp4", destPath="../temp_del/frames")
-        (1605, 54)
-        >>> np.linspace(2.0, 3.0, num=5, endpoint=False)
-        array([2. ,  2.2,  2.4,  2.6,  2.8])
-        >>> plt.show()
-        """
+    Extracts video frames to images
+        Non-scalar `start` and `stop` are now supported.
+    Parameters
+    ----------
+    videoFilePath : string
+        Full path to video file 
+    destPath : string
+        Path to extract image frames. Creates the dest dir and all parents if not exists
+    frameNamePattern: string
+        Pattern for frame image file naming. Example: "frame{}.png".format(frameCount)
+    extractDelta : int, optional
+        Frame stride
+    maxFrames : int, optional
+        Maximum frames to extract (Not implemented yet)
+    frameStart : int, optional
+        Start with frame (Not implemented yet)
+    Returns
+    -------
+    frameCount : int
+        Total frames read
+    extractCount : int, optional
+        Total frames extracted
+    See Also
+    --------
+    Examples
+    --------
+    >>> result = kv.extractFrames("../temp_del/movx1.mp4", destPath="../temp_del/frames")
+    (1605, 54)
+    >>> np.linspace(2.0, 3.0, num=5, endpoint=False)
+    array([2. ,  2.2,  2.4,  2.6,  2.8])
+    >>> plt.show()
+    """
     # Path to video file
     vidObj = cv2.VideoCapture(videoFilePath)
     # Used as counter variable
