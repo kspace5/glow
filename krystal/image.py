@@ -57,7 +57,8 @@ def imshow(img, title="Image"):
 
 def imgrid(imlist, rows, cols, size=30):
     """
-    Display images in a grid
+    Display images in a grid. Maximum number of images is limited to the rows*cols
+    or the imlist size, which ever is smaller.
     Parameters
     ----------
     imlist:
@@ -78,14 +79,14 @@ def imgrid(imlist, rows, cols, size=30):
     >>>kim.imgrid(imlist[2:6], 2, 3, 30)
     """
     fig = plt.figure(figsize=(int(size*rows/10), int(size*cols/10)))
-    ax = []
+    subplot = []
     L = cols * rows
-    max = L if L < len(imlist) else len(imlist)
-    for i in range(max):
+    subplot = L if L < len(imlist) else len(imlist)
+    for i in range(subplot):
         img = imlist[i]
-        # create subplot and append to ax
-        ax.append( fig.add_subplot(cols, rows, i+1) )
-        ax[-1].set_title("im:"+str(i))  # set title
+        # create subplot and append tosubplot
+        subplot.append( fig.add_subplot(cols, rows, i+1) )
+        subplot[-1].set_title("im:"+str(i))  # set title
         plt.imshow(img)
     plt.show()
     
