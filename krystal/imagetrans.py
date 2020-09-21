@@ -151,7 +151,7 @@ def gridcrop(im, t = 256, crop_count = None):
      [305, 261],
      [305, 522]]
     
-    Further slices from the resukt can give hirizontal, vertical or diagonal strips from the grid
+    Further slices from the result can give horizontal, vertical or diagonal strips from the grid
     >>>crg1[:3]
     [[0, 0], [0, 261], [0, 522]]
     >>>crg1[3*2:3*2+3] # Extract the middle row

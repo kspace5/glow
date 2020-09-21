@@ -79,14 +79,14 @@ def imgrid(imlist, rows, cols, size=30):
     >>>kim.imgrid(imlist[2:6], 2, 3, 30)
     """
     fig = plt.figure(figsize=(int(size*rows/10), int(size*cols/10)))
-    subplot = []
+    subplots = []
     L = cols * rows
-    subplot = L if L < len(imlist) else len(imlist)
-    for i in range(subplot):
+    gsize = L if L < len(imlist) else len(imlist)
+    for i in range(gsize):
         img = imlist[i]
-        # create subplot and append tosubplot
-        subplot.append( fig.add_subplot(cols, rows, i+1) )
-        subplot[-1].set_title("im:"+str(i))  # set title
+        # create subplots and append plt
+        subplots.append( fig.add_subplot(cols, rows, i+1) )
+        subplots[-1].set_title("im:"+str(i))  # set title
         plt.imshow(img)
     plt.show()
     
