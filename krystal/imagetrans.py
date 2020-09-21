@@ -4,25 +4,16 @@ import numpy as np
 import math as M
 
 
-class CropDirection (Enum):
-    """
-    Crop directions defined
-    """
-    vert = 1
-    hori = 2
-    diag = 3
+# def batchcrop(path: Path, destDir: Path, targetSize=256, fileNameCallback=None):
+#     """
+#     Crop all images in a directory
+#     """
 
 
-def batchcrop(path: Path, destDir: Path, targetSize=256, fileNameCallback=None):
-    """
-    Crop all images in a directory
-    """
-
-
-def cropimg(path: Path, destDir: Path, targetSize=256, fileNameCallback=None, cropModes=[CropDirection.vert, CropDirection.hori, CropDirection.diag]):
-    """
-    Crop one image
-    """
+# def cropimg(path: Path, destDir: Path, targetSize=256, fileNameCallback=None, cropModes=[CropDirection.vert, CropDirection.hori, CropDirection.diag]):
+#     """
+#     Crop one image
+#     """
 
 
 def hcrop(im , t = 256, count = 3) :
@@ -60,11 +51,12 @@ def hcrop(im , t = 256, count = 3) :
     [ 88 125]
     [132 125]
     [177 125]
+    
     """
     h, w = im.shape[0], im.shape[1]
     toplimit = M.floor((h - t) / 2) # Same as h/2 - t/2
     lastp = w - t
-    if lastp <= 0:
+    if lastp < 0:
         raise Exception("Invalid crop size. Crop size is larger than image dimensions")
     xcuts = np.linspace(0, lastp, count).astype(int)
     xcuts  = xcuts[..., np.newaxis] # add new axis for appending
@@ -107,7 +99,7 @@ def vcrop(im , t = 256, count = 3) :
     h, w = im.shape[0], im.shape[1]
     leftlimit = M.floor((w - t) / 2) # Same as h/2 - t/2
     lastp = h - t
-    if lastp <= 0:
+    if lastp < 0:
         raise Exception("Invalid crop size. Crop size is larger than image dimensions")
     ycuts = np.linspace(0, lastp, count).astype(int)
     ycuts  = ycuts[..., np.newaxis] # add new axis for appending
@@ -117,7 +109,7 @@ def vcrop(im , t = 256, count = 3) :
     return crops
 
 
-def gridcrop(im, t = 256, crop_count = (3,3)):
+def gridcrop(im, t = 256, crop_count = None):
     """
     Crops an image using a grid pattern and returns the resulting 
     top left coords for cropping it later.
@@ -128,36 +120,51 @@ def gridcrop(im, t = 256, crop_count = (3,3)):
         Format h, w, d or h, w
     t : int
         Target size
-    crop_count: tuple (int, int)
+    crop_count: tuple (int, int) (optional)
+        Optimal crop count is calculated based on image and target sizes and 
+        used by default.
         Target count in the format (rows x cols) in the resulting grid. 
         Note: Using an odd number count gives the center.
     Returns
     -------
     coords : python array
-        Array of topleft coords
+        Array of topleft coords that can be used to generate crops
     See Also
     --------
-    vcrops, hcrops
+    vcrop, hcrop
     Examples
     --------
-    >>> crg1 = kt.gridcrop(im, 128, (3, 4)) ; crg1
-    [[0, 0],
+   crg1 = kt.gridcrop(im, 128, (3, 5)) ; crg1
+   [[0, 0],
      [0, 261],
      [0, 522],
-     [101, 0],
-     [101, 261],
-     [101, 522],
-     [203, 0],
-     [203, 261],
-     [203, 522],
+     [76, 0],
+     [76, 261],
+     [76, 522],
+     [152, 0],
+     [152, 261],
+     [152, 522],
+     [228, 0],
+     [228, 261],
+     [228, 522],
      [305, 0],
      [305, 261],
      [305, 522]]
+    
+    Further slices from the resukt can give hirizontal, vertical or diagonal strips from the grid
+    >>>crg1[:3]
+    [[0, 0], [0, 261], [0, 522]]
+    >>>crg1[3*2:3*2+3] # Extract the middle row
+    [152, 0], [152, 261], [152, 522]]
+    >>>crg1[::5] # For a diagonal cut
+    [[0, 0], [76, 522], [228, 261]]
     """
+    # Optimal crop count is used by default if not provided
+    crop_count = find_optimalcropcount(im, t) if crop_count is None else crop_count
     w, h = im.shape[1], im.shape[0]
     lastp_hor, lastp_vert = w -t, h - t
     
-    if lastp_hor <= 0 or lastp_vert <= 0:
+    if lastp_hor < 0 or lastp_vert < 0:
         raise Exception("Invalid crop size. Crop size is larger than image dimensions")
     
     xcuts = np.linspace(0, lastp_hor, crop_count[0]).astype(int)
@@ -167,19 +174,52 @@ def gridcrop(im, t = 256, crop_count = (3,3)):
     for xi in ycuts:
         for yi in xcuts:
             crops.append([xi,yi])
-    return crops
-    
+    return crops, crop_count
 
-def imgcut(im, t, *cropslist):
+
+def find_optimalcropcount(im, t = 256, trim_tolerance=0.2):
     """
-    Crops the input based on the list of crop top left coords.
-    Input image should be of shape h, w, d or h, w
+    Optimal crop count for the grid crop is calculated based on image and target sizes.
     Parameters
     ----------
     im : numpy.ndarray
         Format h, w, d or h, w
     t : int
         Target size
+    trim_ok : bool
+        Determines whether trimming part of the image that does not exactly fit the crops is enabled
+        Default is True
+    Returns
+    -------
+    cropcount : tuple (int, int)
+        optimal rows x cols for the grid crop
+    """
+    w, h = im.shape[1], im.shape[0]
+    lastp_hor, lastp_vert = w -t, h - t
+    
+    if lastp_hor < 0 or lastp_vert < 0:
+        raise Exception("Invalid crop size. Crop size is larger than image dimensions")
+    
+    # When trim_tolerance is 0.2,
+    # if the last piece is less than 20% of target size it is left out
+    x = M.floor(w / t) if (w % t) / t < trim_tolerance  else M.floor((w / t) + 1)
+    y = M.floor(h / t) if (h % t) / t < trim_tolerance  else M.floor((h / t) + 1)
+    return (x, y)
+    
+
+def imgcut(im, t, *cropslist):
+    """
+    Crops the input based on the list of crop top left coords.
+    Input image should be of shape h, w, d or h, w
+    Performance note: The result is a list of slices of the original image ndarray 
+    and not memory copies.
+    Parameters
+    ----------
+    im : numpy.ndarray
+        Format h, w, d or h, w
+    t : int
+        Target size
+        Use the same t here as used for the gridcrop.
     croplist: python list of ndarrays
         List of crop top left coords.
     Returns
@@ -187,7 +227,7 @@ def imgcut(im, t, *cropslist):
     imlist : List of cropped images in the same format as input image
     See Also
     --------
-    vcrop, hcrop
+    gridcrop
     Examples
     --------
     >>> crops = ki.vcrop(im, t=128,count=7))
