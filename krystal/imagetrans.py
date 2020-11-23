@@ -167,8 +167,20 @@ def gridcrop(im, t = 256, crop_count = None):
     if lastp_hor < 0 or lastp_vert < 0:
         raise Exception("Invalid crop size. Crop size is larger than image dimensions")
     
-    xcuts = np.linspace(0, lastp_hor, crop_count[0]).astype(int)
-    ycuts = np.linspace(0, lastp_vert, crop_count[1]).astype(int)
+    lastp_hor_e = lastp_hor -1 
+    lastp_vert_e = lastp_vert -1
+    if not crop_count[2] :
+        lastp_hor_e = lastp_hor - 1
+    if not crop_count[3] :
+        lastp_vert_e = lastp_vert - 1
+        
+    xcuts = np.linspace(0, lastp_hor_e, crop_count[0]).astype(int)
+    ycuts = np.linspace(0, lastp_vert_e, crop_count[1]).astype(int)
+    
+    if crop_count[2] :
+        xcuts = np.append(xcuts, lastp_hor)
+    if crop_count[3] :
+        ycuts = np.append(ycuts, lastp_vert)
     
     crops = []
     for xi in ycuts:
@@ -177,7 +189,7 @@ def gridcrop(im, t = 256, crop_count = None):
     return crops, crop_count
 
 
-def find_optimalcropcount(im, t = 256, trim_tolerance=0.2):
+def find_optimalcropcount(im, t = 256, trim_tolerance=0.3):
     """
     Optimal crop count for the grid crop is calculated based on image and target sizes.
     Parameters
@@ -191,8 +203,9 @@ def find_optimalcropcount(im, t = 256, trim_tolerance=0.2):
         Default is True
     Returns
     -------
-    cropcount : tuple (int, int)
-        optimal rows x cols for the grid crop
+    cropcount : tuple (int, int, bool, bool)
+        optimal rows x cols for the grid crop and
+        true if reminder is larger than tolerance
     """
     w, h = im.shape[1], im.shape[0]
     lastp_hor, lastp_vert = w -t, h - t
@@ -202,10 +215,40 @@ def find_optimalcropcount(im, t = 256, trim_tolerance=0.2):
     
     # When trim_tolerance is 0.2,
     # if the last piece is less than 20% of target size it is left out
-    x = M.floor(w / t) if (w % t) / t < trim_tolerance  else M.floor((w / t) + 1)
-    y = M.floor(h / t) if (h % t) / t < trim_tolerance  else M.floor((h / t) + 1)
-    return (x, y)
+    x = M.floor(w / t)
+    y = M.floor(h / t)
+    return (x, y, (w % t) / t < trim_tolerance,  (h % t) / t < trim_tolerance)
+   
+
+def find_trim_reminder(im, t = 256, trim_tolerance=0.2):
+    """
+    Optimal crop count for the grid crop is calculated based on image and target sizes.
+    Parameters
+    ----------
+    im : numpy.ndarray
+        Format h, w, d or h, w
+    t : int
+        Target size
+    trim_ok : bool
+        Determines whether trimming part of the image that does not exactly fit the crops is enabled
+        Default is True
+    Returns
+    -------
+    cropcount : tuple (bool, bool)
+        True if reminder is less than trim tolerance
+    """
+    w, h = im.shape[1], im.shape[0]
+    lastp_hor, lastp_vert = w -t, h - t
     
+    if lastp_hor < 0 or lastp_vert < 0:
+        raise Exception("Invalid crop size. Crop size is larger than image dimensions")
+    
+    # When trim_tolerance is 0.2,
+    # if the last piece is less than 20% of target size it is left out
+    x = (w % t) / t < trim_tolerance
+    y = (h % t) / t < trim_tolerance
+    return (x, y)
+
 
 def imgcut(im, t, *cropslist):
     """
