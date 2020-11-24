@@ -205,7 +205,7 @@ def find_optimalcropcount(im, t = 256, trim_tolerance=0.3):
     -------
     cropcount : tuple (int, int, bool, bool)
         optimal rows x cols for the grid crop and
-        true if reminder is larger than tolerance
+        true if reminder ratio is larger than tolerance
     """
     w, h = im.shape[1], im.shape[0]
     lastp_hor, lastp_vert = w -t, h - t
@@ -217,10 +217,10 @@ def find_optimalcropcount(im, t = 256, trim_tolerance=0.3):
     # if the last piece is less than 20% of target size it is left out
     x = M.floor(w / t)
     y = M.floor(h / t)
-    return (x, y, (w % t) / t < trim_tolerance,  (h % t) / t < trim_tolerance)
+    return (x, y, (w % t) / t > trim_tolerance,  (h % t) / t > trim_tolerance)
    
 
-def find_trim_reminder(im, t = 256, trim_tolerance=0.2):
+def _find_trim_reminder(im, t = 256, trim_tolerance=0.2):
     """
     Optimal crop count for the grid crop is calculated based on image and target sizes.
     Parameters
