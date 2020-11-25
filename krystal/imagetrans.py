@@ -109,7 +109,7 @@ def vcrop(im , t = 256, count = 3) :
     return crops
 
 
-def gridcrop(im, t = 256, crop_count = None):
+def gridcrop(im, t = 256, trim_tolerance=0.3, crop_count = None):
     """
     Crops an image using a grid pattern and returns the resulting 
     top left coords for cropping it later.
@@ -160,7 +160,7 @@ def gridcrop(im, t = 256, crop_count = None):
     [[0, 0], [76, 522], [228, 261]]
     """
     # Optimal crop count is used by default if not provided
-    crop_count = find_optimalcropcount(im, t) if crop_count is None else crop_count
+    crop_count = find_optimalcropcount(im, t, trim_tolerance) if crop_count is None else crop_count
     w, h = im.shape[1], im.shape[0]
     lastp_hor, lastp_vert = w -t, h - t
     
@@ -219,36 +219,6 @@ def find_optimalcropcount(im, t = 256, trim_tolerance=0.3):
     y = M.floor(h / t)
     return (x, y, (w % t) / t > trim_tolerance,  (h % t) / t > trim_tolerance)
    
-
-def _find_trim_reminder(im, t = 256, trim_tolerance=0.2):
-    """
-    Optimal crop count for the grid crop is calculated based on image and target sizes.
-    Parameters
-    ----------
-    im : numpy.ndarray
-        Format h, w, d or h, w
-    t : int
-        Target size
-    trim_ok : bool
-        Determines whether trimming part of the image that does not exactly fit the crops is enabled
-        Default is True
-    Returns
-    -------
-    cropcount : tuple (bool, bool)
-        True if reminder is less than trim tolerance
-    """
-    w, h = im.shape[1], im.shape[0]
-    lastp_hor, lastp_vert = w -t, h - t
-    
-    if lastp_hor < 0 or lastp_vert < 0:
-        raise Exception("Invalid crop size. Crop size is larger than image dimensions")
-    
-    # When trim_tolerance is 0.2,
-    # if the last piece is less than 20% of target size it is left out
-    x = (w % t) / t < trim_tolerance
-    y = (h % t) / t < trim_tolerance
-    return (x, y)
-
 
 def imgcut(im, t, *cropslist):
     """
