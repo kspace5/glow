@@ -38,13 +38,13 @@ def extractFrames(videoFilePath, destPath, frameNamePattern="frame{}.png", extra
     >>> plt.show()
     """
     # Path to video file
-    vidObj = cv2.VideoCapture(videoFilePath)
+    vidObj = cv2.VideoCapture(str(videoFilePath))
     # Used as counter variable
     frameCount = 0
     extractCount = 0
     # checks whether frames were extracted
     success = True
-    destPath = Path(destPath)  # converted to path obj
+    destPath = destPath  # converted to path obj
     # creates the dest dir and all parents if not exists
     destPath.mkdir(parents=True, exist_ok=True)
     while success:
