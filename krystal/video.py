@@ -9,9 +9,9 @@ def extractFrames(videoFilePath, destPath, frameNamePattern="frame{}.png", extra
         Non-scalar `start` and `stop` are now supported.
     Parameters
     ----------
-    videoFilePath : string
+    videoFilePath : Path
         Full path to video file 
-    destPath : string
+    destPath : Path
         Path to extract image frames. Creates the dest dir and all parents if not exists
     frameNamePattern: string
         Pattern for frame image file naming. Example: "frame{}.png".format(frameCount)
@@ -44,7 +44,6 @@ def extractFrames(videoFilePath, destPath, frameNamePattern="frame{}.png", extra
     extractCount = 0
     # checks whether frames were extracted
     success = True
-    destPath = destPath  # converted to path obj
     # creates the dest dir and all parents if not exists
     destPath.mkdir(parents=True, exist_ok=True)
     while success:
