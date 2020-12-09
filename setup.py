@@ -1,7 +1,7 @@
 from setuptools import setup
 
 setup(name='krystal',
-version='1.2.16',
+version='1.2.17',
 description='Image processing for Deep Learning',
 url='https://github.com/krexspace/krystal.git',
 author='krex',

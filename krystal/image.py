@@ -46,7 +46,7 @@ def imwrite(path: Path, im):
     --------
     >>>imwrite(bpath / "mushrooms.jpg", im)
     """
-    cv2.write(str(path), im)
+    cv2.imwrite(str(path), im)
     
 
 def imshow(img, title="Image"):
