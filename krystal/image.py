@@ -46,6 +46,7 @@ def imwrite(path: Path, im):
     --------
     >>>imwrite(bpath / "mushrooms.jpg", im)
     """
+    im = cv2.cvtColor(im, cv2.COLOR_RGB2BGR)
     cv2.imwrite(str(path), im)
     
 
