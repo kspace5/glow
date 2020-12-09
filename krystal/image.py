@@ -22,11 +22,32 @@ def imread(path: Path):
     imshow
     Examples
     --------
-    >>>imread(bpath / "mushrroms.jpg")
+    >>>imread(bpath / "mushrooms.jpg")
     """
     img =  cv2.imread(str(path))
     return cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 
+
+def imwrite(path: Path, im):
+    """
+    Writes the image to the Path as an image
+    Parameters
+    ----------
+    p : Path
+        Image path
+    im : image data - numpy.ndarray
+    Returns
+    -------
+    NIL
+    See Also
+    --------
+    imshow, imread
+    Examples
+    --------
+    >>>imwrite(bpath / "mushrooms.jpg", im)
+    """
+    cv2.write(str(path), im)
+    
 
 def imshow(img, title="Image"):
     """
@@ -45,7 +66,7 @@ def imshow(img, title="Image"):
     imread
     Examples
     --------
-    >>>imread(bpath / "mushrroms.jpg")
+    >>>imread(bpath / "mushrooms.jpg")
     """
     if utils.is_notebook():
         plt.imshow(img)
