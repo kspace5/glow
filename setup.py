@@ -1,11 +1,11 @@
 from setuptools import setup
 
-setup(name='krystal',
-version='1.3.1',
+setup(name='pixter',
+version='1.3.2',
 description='Image processing for Deep Learning',
-url='https://github.com/krexspace/krystal.git',
+url='https://github.com/krexspace/pixter.git',
 author='krex',
 author_email='krexspace@gmail.com',
 license='MIT',
-packages=['krystal'],
+packages=['pixter'],
 zip_safe=False)
