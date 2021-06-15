@@ -1,11 +1,11 @@
 from setuptools import setup
 
-setup(name='pixter',
-version='1.3.2',
+setup(name='glow',
+version='1.3.3',
 description='Image processing for Deep Learning',
-url='https://github.com/krexspace/pixter.git',
+url='https://github.com/krexspace/glow.git',
 author='krex',
 author_email='krexspace@gmail.com',
 license='MIT',
-packages=['pixter'],
+packages=['glow'],
 zip_safe=False)
