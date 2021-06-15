@@ -27,6 +27,7 @@ def imread(path: Path):
     img =  cv2.imread(str(path))
     return cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 
+load = imread
 
 def imwrite(path: Path, im):
     """
@@ -49,6 +50,7 @@ def imwrite(path: Path, im):
     im = cv2.cvtColor(im, cv2.COLOR_RGB2BGR)
     cv2.imwrite(str(path), im)
     
+save = imwrite
 
 def imshow(img, title="Image"):
     """
@@ -76,6 +78,7 @@ def imshow(img, title="Image"):
     else:
         cv2.imshow(title, img)
         
+show = imshow
 
 def imgrid(imlist, rows, cols, size=30):
     """
@@ -111,7 +114,8 @@ def imgrid(imlist, rows, cols, size=30):
         subplots[-1].set_title("im:"+str(i))  # set title
         plt.imshow(img)
     plt.show()
-    
+
+grid = imgrid
     
     
 # def vidshow(vidPath):

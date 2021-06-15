@@ -1,7 +1,7 @@
 from setuptools import setup
 
 setup(name='glow',
-version='1.3.3',
+version='1.4.0',
 description='Image processing for Deep Learning',
 url='https://github.com/krexspace/glow.git',
 author='krex',
