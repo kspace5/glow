@@ -1,5 +1,6 @@
 # GLOW
 Image Processing for Deep Learning
+( note: This project used to be called Krystal, now has been renamed to GLOW )
 
 ## Install instructions
 From conda or any python env  
