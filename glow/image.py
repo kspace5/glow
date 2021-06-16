@@ -80,6 +80,26 @@ def imshow(img, title="Image"):
         
 show = imshow
 
+def info(im):
+    """
+    Display info on the image data
+    Parameters
+    ----------
+    im : ndarray, numpy image data
+    Returns
+    -------
+    None
+    See Also
+    --------
+    imread
+    Examples
+    --------
+    >>>info(im)
+    """
+    print("Shape: ", im.shape)
+    print("Min, Max: ", im.min(), ',', im.max())
+    print("Datatype: ", im.dtype)
+
 def imgrid(imlist, rows, cols, size=30):
     """
     Display images in a grid. Maximum number of images is limited to the rows*cols
